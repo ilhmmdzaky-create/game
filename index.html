@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prank Freeze (Visual Saja)</title>
+<style>
+  :root{
+    --bg:#0c0e12;
+    --panel:#15181f;
+    --text:#e8eaed;
+    --dim:#7b8290;
+    --accent:#4a9eff;
+    --danger:#2563c9;
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    height:100%;
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    overflow:hidden;
+  }
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    padding-top: calc(24px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+
+  #stage{
+    width:min(560px, 100%);
+    text-align:center;
+  }
+
+  /* --- idle state: innocuous little app window --- */
+  .window{
+    background:var(--panel);
+    border-radius:10px;
+    border:1px solid #262b35;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+    transition:filter .25s ease;
+  }
+  .titlebar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 14px;
+    background:#1b1f28;
+    border-bottom:1px solid #262b35;
+    font-size:13px;
+    color:var(--dim);
+  }
+  .dot{width:10px;height:10px;border-radius:50%;}
+  .dot.r{background:#ff5f57;}
+  .dot.y{background:#febc2e;}
+  .dot.g{background:#28c840;}
+  .titlebar span{margin-left:8px;}
+
+  .content{
+    padding:48px 28px 56px;
+  }
+  .content h1{
+    font-size:19px;
+    font-weight:600;
+    margin:0 0 10px;
+  }
+  .content p{
+    font-size:14px;
+    color:var(--dim);
+    margin:0 0 28px;
+    line-height:1.5;
+  }
+  button#trigger{
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:12px 22px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  button#trigger:active{ transform: translateY(1px); }
+
+  /* --- "frozen" look: just a CSS illusion, nothing is actually blocked --- */
+  .frozen .content{ filter: saturate(.7) contrast(1.02); }
+  .frozen .window{ filter: grayscale(.15); }
+
+  #overlay{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(8,9,12,.35);
+    backdrop-filter: blur(1px);
+  }
+  #overlay.show{ display:flex; }
+
+  .spinner{
+    width:34px;height:34px;
+    border-radius:50%;
+    border:3px solid rgba(255,255,255,.15);
+    border-top-color:var(--accent);
+    animation:spin .9s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .badge{
+    margin-top:10px;
+    font-size:12px;
+    color:var(--dim);
+  }
+
+  #note{
+    margin-top:18px;
+    font-size:12px;
+    color:var(--dim);
+  }
+  #note b{ color:var(--text); }
+</style>
+</head>
+<body>
+  <div id="stage">
+    <div class="window" id="win">
+      <div class="titlebar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span>system-utility.exe</span>
+      </div>
+      <div class="content">
+        <h1 id="heading"></h1>
+        <p id="subtext">Klik tombol untuk mulai.</p>
+        <button id="trigger">Mulai Permainan</button>
+      </div>
+    </div>
+  
+  </div>
+
+  <div id="overlay">
+    <div style="text-align:center;">
+      <div class="spinner"></div>
+      <div class="badge">Not Responding…</div>
+    </div>
+  </div>
+
+<script>
+  const win = document.getElementById('win');
+  const btn = document.getElementById('trigger');
+  const heading = document.getElementById('heading');
+  const subtext = document.getElementById('subtext');
+  const overlay = document.getElementById('overlay');
+
+  btn.addEventListener('click', () => {
+    win.classList.add('frozen');
+    overlay.classList.add('show');
+    btn.disabled = true;
+    heading.textContent = 'Memproses...';
+    subtext.textContent = 'Mohon tunggu.';
+
+    // Purely cosmetic delay — the page stays fully responsive,
+    // the overlay just hides the button for a few seconds.
+    setTimeout(() => {
+      win.classList.remove('frozen');
+      overlay.classList.remove('show');
+      btn.disabled = false;
+      btn.textContent = 'Coba Lagi';
+      heading.textContent = 'SELAMAT ANDA TELAH SIA2 MENUNGGU!!';
+      subtext.textContent = '';
+    }, 60000);
+  });
+</script>
+</body>
+</html>
